@@ -50,11 +50,11 @@ app.listen(3000, () => console.log('Express server is runnig at port no : 3000')
 
 
 
-//Get all employees
+//Get all treatment history
 
-app.get('/user', (req, res) => {
+app.get('/parcoursoin', (req, res) => {
 
-    mysqlConnection.query('SELECT * FROM user', (err, rows, fields) => {
+    mysqlConnection.query('SELECT * FROM parcoursoin', (err, rows, fields) => {
 
         if (!err)
 
