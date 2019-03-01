@@ -67,3 +67,70 @@ app.get('/parcoursoin', (req, res) => {
     })
 
 });
+
+//Get rendezvous by user id && medecin id
+app.get('/rendezvous/:iduser&&:idmedecin', (req, res) => {
+
+    mysqlConnection.query('SELECT * FROM rendezvous WHERE iduser = ? AND 	idmedecin = ?',[req.params.iduser,req.params.idmedecin], (err, rows, fields) => {
+
+        if (!err)
+
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
+//Get all user's rendezvous by user id
+app.get('/rendezvouss/:iduser', (req, res) => {
+
+    mysqlConnection.query('SELECT * FROM rendezvous WHERE iduser = ? ',[req.params.iduser], (err, rows, fields) => {
+
+        if (!err)
+
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
+
+// Get medecin by id
+
+app.get('/medecin/:idmedecin', (req, res) => {
+
+    mysqlConnection.query('SELECT * FROM medecin WHERE idmedecin = ? ',[req.params.idmedecin], (err, rows, fields) => {
+
+        if (!err)
+
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
+//Get user's rendezvous + doc name using  inner join
+app.get('/rendezvous/:iduser', (req, res) => {
+
+    mysqlConnection.query('SELECT rendezvous.date , medecin.nom from rendezvous INNER JOIN medecin ON rendezvous.idmedecin=medecin.idmedecin WHERE iduser=? ',[req.params.iduser], (err, rows, fields) => {
+
+        if (!err)
+
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
