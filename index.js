@@ -20,7 +20,7 @@ var mysqlConnection = mysql.createConnection({
 
     password: '',
 
-    database: 'medicard',
+    database: 'pim',
 
     multipleStatements: true
 
@@ -118,10 +118,26 @@ app.get('/medecin/:idmedecin', (req, res) => {
     })
 
 });
-//Get user's rendezvous + doc name using  inner join
-app.get('/rendezvous/:iduser', (req, res) => {
+//Get user's valide and non expired rendezvous + doc fname/ lastName
+app.get('/rendezvousValider/:iduser', (req, res) => {
 
-    mysqlConnection.query('SELECT rendezvous.date , medecin.nom from rendezvous INNER JOIN medecin ON rendezvous.idmedecin=medecin.idmedecin WHERE iduser=? ',[req.params.iduser], (err, rows, fields) => {
+    mysqlConnection.query('SELECT rendezvous.date , medecin.lnmedecin , medecin.fnmedecin from rendezvous INNER JOIN medecin ON rendezvous.idmedecin=medecin.idmedecin WHERE idpatient=? && etat=1  && date> CURRENT_TIMESTAMP()',[req.params.iduser], (err, rows, fields) => {
+
+        if (!err)
+
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
+//Get user's expired rendezvous + doc name +last name
+app.get('/rendezvousExpired/:iduser', (req, res) => {
+
+    mysqlConnection.query('SELECT rendezvous.date , medecin.lnmedecin , medecin.fnmedecin from rendezvous INNER JOIN medecin ON rendezvous.idmedecin=medecin.idmedecin WHERE idpatient=? && etat=1  && date< CURRENT_TIMESTAMP()',[req.params.iduser], (err, rows, fields) => {
 
         if (!err)
 
