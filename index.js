@@ -52,9 +52,9 @@ app.listen(3000, () => console.log('Express server is runnig at port no : 3000')
 
 //Get all treatment history
 
-app.get('/parcoursoin', (req, res) => {
+app.get('/parcoursoin/:idpatient', (req, res) => {
 
-    mysqlConnection.query('SELECT * FROM parcoursoin', (err, rows, fields) => {
+    mysqlConnection.query('SELECT examenmedical.idexamenmedicale, examenmedical.maladie, examenmedical.description, examenmedical.medicament, examenmedical.utilisation, examenmedical.duree,examenmedical.dateconsulation,  medecin.idmedecin, medecin.lnmedecin, medecin.fnmedecin  from examenmedical INNER JOIN medecin ON examenmedical.idmedecin=medecin.idmedecin WHERE idpatient=?', [req.params.idpatient],(err, rows, fields) => {
 
         if (!err)
 
@@ -121,7 +121,7 @@ app.get('/medecin/:idmedecin', (req, res) => {
 //Get user's valide and non expired rendezvous + doc fname/ lastName
 app.get('/rendezvousValider/:iduser', (req, res) => {
 
-    mysqlConnection.query('SELECT rendezvous.date , medecin.lnmedecin , medecin.fnmedecin from rendezvous INNER JOIN medecin ON rendezvous.idmedecin=medecin.idmedecin WHERE idpatient=? && etat=1  && date> CURRENT_TIMESTAMP()',[req.params.iduser], (err, rows, fields) => {
+    mysqlConnection.query('SELECT rendezvous.date , medecin.idmedecin , medecin.lnmedecin , medecin.fnmedecin from rendezvous INNER JOIN medecin ON rendezvous.idmedecin=medecin.idmedecin WHERE idpatient=? && etat=1  && date> CURRENT_TIMESTAMP()',[req.params.iduser], (err, rows, fields) => {
 
         if (!err)
 
@@ -137,7 +137,7 @@ app.get('/rendezvousValider/:iduser', (req, res) => {
 //Get user's expired rendezvous + doc name +last name
 app.get('/rendezvousExpired/:iduser', (req, res) => {
 
-    mysqlConnection.query('SELECT rendezvous.date , medecin.lnmedecin , medecin.fnmedecin from rendezvous INNER JOIN medecin ON rendezvous.idmedecin=medecin.idmedecin WHERE idpatient=? && etat=1  && date< CURRENT_TIMESTAMP()',[req.params.iduser], (err, rows, fields) => {
+    mysqlConnection.query('SELECT rendezvous.date,medecin.lnmedecin , medecin.fnmedecin from rendezvous INNER JOIN medecin ON rendezvous.idmedecin=medecin.idmedecin WHERE idpatient=? && etat=1  && date< CURRENT_TIMESTAMP()',[req.params.iduser], (err, rows, fields) => {
 
         if (!err)
 
