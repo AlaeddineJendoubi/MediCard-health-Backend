@@ -150,3 +150,18 @@ app.get('/rendezvousExpired/:iduser', (req, res) => {
     })
 
 });
+app.post('/rendezvousinsert/',(req,res)=> {
+    var post= {
+      idmedecin : req.query.idmedecin ,
+      idpatient : req.query.idpatient ,
+      date :  req.query.date ,
+      etat : req.query.etat
+    };
+    mysqlConnection.query('INSERT INTO rendezvous SET ?' , post, function(error) {
+        if (error) {
+            console.log(error.message);
+        } else {
+            console.log('success');
+        }
+    });
+});
