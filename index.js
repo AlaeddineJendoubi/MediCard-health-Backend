@@ -6,9 +6,10 @@ var app = express();
 
 const bodyparser = require('body-parser');
 
+// parse application/x-www-form-urlencoded
 
+app.use(bodyparser.urlencoded({ extended: false }));
 
-app.use(bodyparser.json());
 
 
 
@@ -118,6 +119,39 @@ app.get('/medecin/:idmedecin', (req, res) => {
     })
 
 });
+
+// Get specilaite des medecins by id
+
+app.get('/specilaite', (req, res) => {
+
+    mysqlConnection.query('SELECT DISTINCT  specialitemedecin FROM medecin ', (err, rows, fields) => {
+
+        if (!err)
+
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
+app.get('/medecinSpecialite/:specialitemedecin', (req, res) => {
+
+    mysqlConnection.query('SELECT idmedecin,fnmedecin,lnmedecin from medecin WHERE specialitemedecin= ? ',[req.params.specialitemedecin], (err, rows, fields) => {
+
+        if (!err)
+
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
 //Get user's valide and non expired rendezvous + doc fname/ lastName
 app.get('/rendezvousValider/:iduser', (req, res) => {
 
@@ -134,6 +168,22 @@ app.get('/rendezvousValider/:iduser', (req, res) => {
     })
 
 });
+app.get('/rendezvousPinned/:iduser', (req, res) => {
+
+    mysqlConnection.query('SELECT rendezvous.date , medecin.idmedecin , medecin.lnmedecin , medecin.fnmedecin from rendezvous INNER JOIN medecin ON rendezvous.idmedecin=medecin.idmedecin WHERE idpatient=? && etat=0  && date> CURRENT_TIMESTAMP()',[req.params.iduser], (err, rows, fields) => {
+
+        if (!err)
+
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
+
 //Get user's expired rendezvous + doc name +last name
 app.get('/rendezvousExpired/:iduser', (req, res) => {
 
@@ -152,10 +202,10 @@ app.get('/rendezvousExpired/:iduser', (req, res) => {
 });
 app.post('/rendezvousinsert/',(req,res)=> {
     var post= {
-      idmedecin : req.query.idmedecin ,
-      idpatient : req.query.idpatient ,
-      date :  req.query.date ,
-      etat : req.query.etat
+      idmedecin : req.body.idmedecin ,
+      idpatient : req.body.idpatient ,
+      date :  req.body.date ,
+      etat : req.body.etat
     };
     mysqlConnection.query('INSERT INTO rendezvous SET ?' , post, function(error) {
         if (error) {
