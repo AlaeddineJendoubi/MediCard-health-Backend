@@ -55,7 +55,7 @@ app.listen(3000, () => console.log('Express server is runnig at port no : 3000')
 
 app.get('/parcoursoin/:idpatient', (req, res) => {
 
-    mysqlConnection.query('SELECT examenmedical.idexamenmedicale, examenmedical.maladie, examenmedical.description, examenmedical.medicament, examenmedical.utilisation, examenmedical.duree,examenmedical.dateconsulation,  medecin.idmedecin, medecin.lnmedecin, medecin.fnmedecin  from examenmedical INNER JOIN medecin ON examenmedical.idmedecin=medecin.idmedecin WHERE idpatient=?', [req.params.idpatient],(err, rows, fields) => {
+    mysqlConnection.query('SELECT examenmedical.idexamenmedicale, examenmedical.maladie, examenmedical.description, examenmedical.dateconsulation,  medecin.idmedecin, medecin.lnmedecin, medecin.fnmedecin  from examenmedical INNER JOIN medecin ON examenmedical.idmedecin=medecin.idmedecin WHERE idpatient=?', [req.params.idpatient],(err, rows, fields) => {
 
         if (!err)
 
@@ -101,7 +101,22 @@ app.get('/rendezvouss/:iduser', (req, res) => {
     })
 
 });
+// Get Ordonnance by patien id
+app.get('/GetOrdonnance/:iduser', (req, res) => {
 
+    mysqlConnection.query('SELECT * FROM Ordonnance WHERE idpatient = ? ',[req.params.iduser], (err, rows, fields) => {
+
+        if (!err)
+
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
 // Get medecin by id
 
 app.get('/medecin/:idmedecin', (req, res) => {
