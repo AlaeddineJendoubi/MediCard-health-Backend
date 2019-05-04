@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 
 const express = require('express');
-
+var router = express.Router();
 var app = express();
 
 const bodyparser = require('body-parser');
@@ -28,7 +28,6 @@ var mysqlConnection = mysql.createConnection({
 });
 
 
-
 mysqlConnection.connect((err) => {
 
     if (!err)
@@ -38,14 +37,44 @@ mysqlConnection.connect((err) => {
     else
 
         console.log('DB connection failed \n Error : ' + JSON.stringify(err, undefined, 2));
+});
+
+app.listen(3000, () => console.log('Express server is runnig at port no : 3000'));
+
+
+app.get('/login/:code', (req, res) => {
+
+    mysqlConnection.query('SELECT * FROM patient Where code = ? ',[req.params.code], (err, rows, fields) => {
+app.use(express.json());
+        if (err)
+          {
+            res.send({'success' : false , 'message' : 'could not connect to db'});
+          }
+        else if(rows.length > 0 ){
+
+            res.send({'success' : true , 'user' : rows[0].code });
+          }
+          else {
+            res.send({'success' : false , 'message' : 'User not found'})
+          }
+    })
 
 });
 
+//ordonnances
+
+          app.get('/ordonnances/:code', (req, res) => {
+            connection.query(
+            'select  GROUP_CONCAT(nommedicament ) AS medicamments  ,GROUP_CONCAT(utilisation) , dateordonnance , fnmedecin , lnmedecin  from medicament , ordonnance , patient , medecin where ordonnance.idmedecin = medecin.idmedecin AND code= ? AND medicament.idordonnance = ordonnance.idordonnance GROUP BY ordonnance.idmedecin , ordonnance.dateordonnance DESC',[req.params.code], (err, rows, fields) => {
+
+              if (!!err) console.log('error');
+            else
+            console.log(rows);
+            res.send(rows); })});
 
 
 
 
-app.listen(3000, () => console.log('Express server is runnig at port no : 3000'));
 
 
 app.get('/getMedsByUser/:idpatient', (req, res) => {
@@ -149,9 +178,9 @@ app.get('/rendezvous/:iduser&&:idmedecin', (req, res) => {
 
 });
 //Get all user's rendezvous by user id
-app.get('/rendezvouss/:iduser', (req, res) => {
+app.get('/getUserId/:code', (req, res) => {
 
-    mysqlConnection.query('SELECT * FROM rendezvous WHERE iduser = ? ',[req.params.iduser], (err, rows, fields) => {
+    mysqlConnection.query('SELECT id from patient WHERE code = ? ',[req.params.code], (err, rows, fields) => {
 
         if (!err)
 
