@@ -48,14 +48,77 @@ mysqlConnection.connect((err) => {
 app.listen(3000, () => console.log('Express server is runnig at port no : 3000'));
 
 
+app.get('/getMedsByUser/:idpatient', (req, res) => {
 
+    mysqlConnection.query('SELECT ordonnance.idordonnance , medicament.nommedicament , medicament.utilisation , medicament.dure FROM medicament INNER JOIN ordonnance ON medicament.idordonnance = ordonnance.idordonnance WHERE ordonnance.idpatient=? ',[req.params.idpatient], (err, rows, fields) => {
 
+        if (!err)
 
-//Get all treatment history
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
+
+//Search exams by date
+app.get('/nommedicaments/:idpatient ', (req, res) => {
+
+    mysqlConnection.query('SELECT examenmedical.idexamenmedicale, examenmedical.maladie, examenmedical.description, examenmedical.dateconsulation,  medecin.idmedecin, medecin.lnmedecin, medecin.fnmedecin ,medecin.idmedecin from examenmedical INNER JOIN medecin ON examenmedical.idmedecin=medecin.idmedecin WHERE idpatient=? AND like % ? % ', [req.params.idpatient,req.params.dateconsulation],(err, rows, fields) => {
+
+        if (!err)
+
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
+
+//Search exams by date
+app.get('/searchExam/:idpatient/:dateconsulation ', (req, res) => {
+
+    mysqlConnection.query('SELECT examenmedical.idexamenmedicale, examenmedical.maladie, examenmedical.description, examenmedical.dateconsulation,  medecin.idmedecin, medecin.lnmedecin, medecin.fnmedecin ,medecin.idmedecin from examenmedical INNER JOIN medecin ON examenmedical.idmedecin=medecin.idmedecin WHERE idpatient=? AND like % ? % ', [req.params.idpatient,req.params.dateconsulation],(err, rows, fields) => {
+
+        if (!err)
+
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
+
+//Get Meds from Ordonnance of the medical exam
+app.get('/getMedByExam/:idexamenmedical', (req, res) => {
+
+    mysqlConnection.query('SELECT ordonnance.idordonnance , medicament.nommedicament , medicament.utilisation , medicament.dure FROM medicament INNER JOIN ordonnance ON medicament.idordonnance = ordonnance.idordonnance WHERE ordonnance.idexamenmedical=?', [req.params.idexamenmedical],(err, rows, fields) => {
+
+        if (!err)
+
+            res.send(rows);
+
+        else
+
+            console.log(err);
+
+    })
+
+});
+//Get all Examen medicale history
 
 app.get('/parcoursoin/:idpatient', (req, res) => {
 
-    mysqlConnection.query('SELECT examenmedical.idexamenmedicale, examenmedical.maladie, examenmedical.description, examenmedical.dateconsulation,  medecin.idmedecin, medecin.lnmedecin, medecin.fnmedecin  from examenmedical INNER JOIN medecin ON examenmedical.idmedecin=medecin.idmedecin WHERE idpatient=?', [req.params.idpatient],(err, rows, fields) => {
+    mysqlConnection.query('SELECT examenmedical.idexamenmedicale, examenmedical.maladie, examenmedical.description, examenmedical.dateconsulation,  medecin.idmedecin, medecin.lnmedecin, medecin.fnmedecin ,medecin.idmedecin from examenmedical INNER JOIN medecin ON examenmedical.idmedecin=medecin.idmedecin WHERE idpatient=?', [req.params.idpatient],(err, rows, fields) => {
 
         if (!err)
 
@@ -152,6 +215,7 @@ app.get('/specilaite', (req, res) => {
     })
 
 });
+//Get medecin by specilaite medecin
 app.get('/medecinSpecialite/:specialitemedecin', (req, res) => {
 
     mysqlConnection.query('SELECT idmedecin,fnmedecin,lnmedecin from medecin WHERE specialitemedecin= ? ',[req.params.specialitemedecin], (err, rows, fields) => {
